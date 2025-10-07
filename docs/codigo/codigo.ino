@@ -13,9 +13,10 @@ const char* password = ""; // Aqui pones tu contraseña
 // CONFIGURACIÓN MQTT (Mosquitto)
 // ==========================
 // Servidor MQTT (Mosquitto público)
-const char* mqtt_server = "test.mosquitto.org";
-const int mqtt_port = 1883;
-const char* mqtt_topic = "carro/movimiento";
+// Estos Tambien los dejamos vacios por la misma situacion
+const char* mqtt_server = "";
+const int mqtt_port = ;
+const char* mqtt_topic = "";
 
 
 WiFiClient espClient;
