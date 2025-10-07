@@ -83,4 +83,4 @@ Usamos una maquina para correr Mosquitto
 ![Prueba1](/img/prueba2.png)
 
 **Prueba MQTT con Postman:**
-![Prueba MQTT Postman](docs/Img5.png)
+![Prueba MQTT Postman](/img/Img5.png)
