@@ -83,5 +83,4 @@ Usamos una maquina para correr Mosquitto
 ![Prueba1](/img/prueba2.png)
 
 **Prueba MQTT con Postman:**
-Suscripción y recepción del mensaje JSON desde el ESP32:
 ![Prueba MQTT Postman](docs/prueba_mqtt_postman.png)

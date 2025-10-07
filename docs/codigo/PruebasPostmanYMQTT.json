@@ -1,0 +1,141 @@
+{
+  "info": {
+    "_postman_id": "9c76c42d-fca5-44f1-84a9-00c11bd1fd2a",
+    "name": "ESP32-Carro-HTTP-MQTT",
+    "description": "Colección de pruebas HTTP y MQTT para el proyecto académico ESP32-Carro-HTTP-MQTT. Incluye endpoints de simulación de movimiento y publicación MQTT.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49050136"
+  },
+  "item": [
+    {
+      "name": "GET - Estado del Servidor (/status)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Respuesta contiene estado y cliente', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('status', 'OK');",
+              "    pm.expect(jsonData).to.have.property('cliente');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://192.168.1.28/status",
+          "protocol": "http",
+          "host": ["192", "168", "1", "28"],
+          "path": ["status"]
+        },
+        "description": "Verifica si el servidor HTTP del ESP32 está activo y respondiendo correctamente."
+      },
+      "response": [
+        {
+          "name": "Simulación - Estado del servidor activo",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://192.168.1.28/status"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"status\": \"OK\",\n  \"cliente\": \"ESP32-Carro\",\n  \"mensaje\": \"Servidor HTTP en ejecución\",\n  \"broker\": \"test.mosquitto.org\",\n  \"conexion_mqtt\": true\n}"
+        }
+      ]
+    },
+    {
+      "name": "GET - Mover carro (/move)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Respuesta contiene dirección y velocidad', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('direccion');",
+              "    pm.expect(jsonData).to.have.property('velocidad');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://192.168.1.28/move?direccion=adelante&velocidad=150&duracion=3",
+          "protocol": "http",
+          "host": ["192", "168", "1", "28"],
+          "path": ["move"],
+          "query": [
+            { "key": "direccion", "value": "adelante" },
+            { "key": "velocidad", "value": "150" },
+            { "key": "duracion", "value": "3" }
+          ]
+        },
+        "description": "Envía una instrucción GET al servidor HTTP del ESP32 simulando un movimiento hacia adelante."
+      },
+      "response": [
+        {
+          "name": "Simulación - Movimiento hacia adelante",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://192.168.1.28/move?direccion=adelante&velocidad=150&duracion=3"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"accion\": \"Movimiento recibido\",\n  \"direccion\": \"adelante\",\n  \"velocidad\": 150,\n  \"duracion\": 3,\n  \"publicado_mqtt\": true,\n  \"topico\": \"carro/movimiento\",\n  \"broker\": \"test.mosquitto.org\",\n  \"mensaje\": \"Publicación MQTT realizada correctamente\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "MQTT - Publicación simulada",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Validar estructura de la publicación MQTT simulada",
+              "pm.test('Publicación MQTT exitosa', function () {",
+              "    const response = JSON.parse(responseBody);",
+              "    pm.expect(response.broker).to.eql('broker.hivemq.com');",
+              "    pm.expect(response.topic).to.eql('carro/movimiento');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Simulación - Publicación al broker MQTT",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"topic\": \"carro/movimiento\",\n  \"payload\": {\n    \"direccion\": \"izquierda\",\n    \"velocidad\": 60,\n    \"duracion\": 2,\n    \"ip_cliente\": \"192.168.1.45\"\n  },\n  \"broker\": \"broker.hivemq.com\",\n  \"estado\": \"publicado\",\n  \"mensaje\": \"Datos transmitidos exitosamente al broker MQTT\"\n}"
+        }
+      ]
+    }
+  ]
+}
