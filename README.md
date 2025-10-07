@@ -1,5 +1,9 @@
 # Iot-Trabajo-final-corte-2
 
+## Inegrantes
+- Santiago Bazzani Rincon 
+- Juan David Heano 
+
 # ESP32-Carro-HTTP-MQTT
 
 ## Descripción del Proyecto
@@ -47,7 +51,7 @@ Los movimientos se simulan mediante **mensajes impresos en el monitor serial**, 
 
 ### Diagrama De secuencias
 
-
+---
 
 ## Resultados Optenidos y pruebas hechas:
 
@@ -77,3 +81,7 @@ Usamos una maquina para correr Mosquitto
 - http://192.168.101.111/move?direccion=adelante&velocidad=200&duracion=3
 
 ![Prueba1](/img/prueba2.png)
+
+**Prueba MQTT con Postman:**
+Suscripción y recepción del mensaje JSON desde el ESP32:
+![Prueba MQTT Postman](docs/prueba_mqtt_postman.png)
