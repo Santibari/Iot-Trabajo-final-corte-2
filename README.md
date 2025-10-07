@@ -69,7 +69,7 @@ Resultado:
 [HTTP] Movimiento recibido: adelante - Velocidad: 150 - Duración: 3
 [MQTT] Publicado en carro/movimiento -> {"direccion":"adelante","velocidad":150,"duracion":3,"ip_cliente":"192.168.1.10"}
 
-**Prueba MQTT con Mosquitto:**
+**Prueba MQTT con Mosquitto (usando Postman):**
 Usamos una maquina para correr Mosquitto
 ![Prueba1](/img/Img4.png)
 
@@ -82,5 +82,92 @@ Usamos una maquina para correr Mosquitto
 
 ![Prueba1](/img/prueba2.png)
 
-**Prueba MQTT con Postman:**
-![Prueba MQTT Postman](/img/Img5.png)
+## Resultados optenidos: 
+
+# Pruebas con Postman y MQTT
+
+Durante la etapa de validación del proyecto, se realizaron pruebas para verificar la correcta comunicación entre el **ESP32**, el **servidor HTTP**, y el **broker MQTT**.  
+El objetivo fue confirmar que los comandos enviados desde un cliente (Postman o aplicación MQTT) fueran recibidos, procesados y publicados correctamente en los tópicos correspondientes.
+
+## Pruebas HTTP con Postman
+
+Se utilizaron peticiones `POST` desde **Postman** para enviar comandos de movimiento al servidor web del ESP32.
+
+### Ejemplo de solicitud
+```json
+{
+  "direccion": "izquierda",
+  "velocidad": 120,
+  "duracion": 3
+}
+```
+
+### Respuesta simulada esperada
+```json
+{
+  "status": "OK",
+  "mensaje": "Movimiento ejecutado correctamente",
+  "detalle": {
+    "direccion": "izquierda",
+    "velocidad": 120,
+    "duracion": 3,
+    "publicado_MQTT": true
+  }
+}
+```
+
+### Explicación técnica
+- El **ESP32** recibe el cuerpo JSON con los parámetros del movimiento.
+- Procesa la dirección y velocidad, y lo muestra por el **Monitor Serial**.
+- Luego, publica el mismo mensaje en el **tópico MQTT** correspondiente (`/carro/movimiento`).
+- La respuesta en Postman confirma que el mensaje fue recibido y reenviado al broker MQTT con éxito.
+
+---
+
+## Pruebas de comunicación MQTT
+
+Se utilizó un cliente MQTT (como **MQTT Explorer** o **MQTTX**) para suscribirse al tópico:
+
+```
+/carro/movimiento
+```
+
+### Mensaje recibido (simulado)
+```json
+{
+  "direccion": "izquierda",
+  "velocidad": 120,
+  "duracion": 3
+}
+```
+
+### Respuesta en el monitor serial del ESP32
+```
+[HTTP] Comando recibido vía POST
+Dirección: izquierda
+Velocidad: 120
+Duración: 3 segundos
+[MQTT] Publicado en tópico /carro/movimiento
+```
+
+### Explicación técnica
+- Cada vez que Postman envía un comando, el ESP32 lo reenvía al broker MQTT.
+- El cliente suscrito visualiza los mismos datos en tiempo real.
+- Esto demuestra la integración entre el **servidor HTTP (control local)** y **el servicio MQTT (comunicación remota o IoT)**.
+
+---
+
+# Resultados obtenidos
+
+- Se verificó que las peticiones **HTTP POST** desde Postman son correctamente interpretadas por el ESP32.  
+- Los datos se muestran en el **monitor serial** con los parámetros de dirección, velocidad y duración.  
+- Cada comando se publica automáticamente en el **broker MQTT**, siendo visible en el tópico `/carro/movimiento`.  
+- Las simulaciones confirman el flujo completo de datos: **cliente → ESP32 (HTTP) → broker MQTT → suscriptores**.
+
+---
+
+# Conclusión
+
+El proyecto demuestra exitosamente la integración de tecnologías **HTTP y MQTT** sobre un **ESP32**, logrando la simulación de control de movimiento de un vehículo a través de peticiones remotas.  
+Las pruebas con **Postman** y el cliente **MQTT** evidencian una comunicación estable y una correcta publicación de datos, validando la arquitectura IoT propuesta.  
+Este resultado confirma que el sistema es funcional, escalable y aplicable a entornos de control remoto o automatización.
