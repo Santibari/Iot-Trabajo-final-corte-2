@@ -45,18 +45,33 @@ Este mecanismo permite **monitorear remotamente** las acciones del carro desde c
 El sistema no controla motores ni componentes físicos.  
 Los movimientos se simulan mediante **mensajes impresos en el monitor serial**, por ejemplo:
 
+### Diagrama De secuencias
+
+
+
 ## Resultados Optenidos y pruebas hechas:
 
 **Antes de iniciar:** Verificamos que si se pudo contectar el microcontrolador al wifi
 
 ![Prueba1](/img/Img1.png)
 
+**Prueba en Postman:**
+![Prueba1](/img/Img2.png)
 
-**prueba 1:**
+**Prueba de Movimiento:**
+![Prueba1](/img/Img3.png)
+Resultado: 
+
+[HTTP] Movimiento recibido: adelante - Velocidad: 150 - Duración: 3
+[MQTT] Publicado en carro/movimiento -> {"direccion":"adelante","velocidad":150,"duracion":3,"ip_cliente":"192.168.1.10"}
+
+**Prueba MQTT con Mosquitto:**
+Usamos una maquina para correr Mosquitto
+![Prueba1](/img/Img4.png)
+
 - http://192.168.101.111/status
 
 ![Prueba1](/img/prueba1.png)
-
 
 **prueba 2:**
 - http://192.168.101.111/move?direccion=adelante&velocidad=200&duracion=3
