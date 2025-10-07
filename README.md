@@ -49,6 +49,9 @@ Los movimientos se simulan mediante **mensajes impresos en el monitor serial**, 
 
 prueba 1:
 http://192.168.101.111/status
+![Prueba1](/img/prueba1.png)
+
 
 prueba 2: 
 http://192.168.101.111/move?direccion=adelante&velocidad=200&duracion=3
+![Prueba1](/img/prueba2.png)
