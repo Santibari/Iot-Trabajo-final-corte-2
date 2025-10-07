@@ -51,6 +51,7 @@ Los movimientos se simulan mediante **mensajes impresos en el monitor serial**, 
 
 ### Diagrama De secuencias
 ![Diagrama de Secuencias](/img/Img5.png)
+
 ---
 
 ## Resultados Optenidos y pruebas hechas:
@@ -81,6 +82,8 @@ Usamos una maquina para correr Mosquitto
 - http://192.168.101.111/move?direccion=adelante&velocidad=200&duracion=3
 
 ![Prueba1](/img/prueba2.png)
+
+---
 
 ## Resultados optenidos: 
 
