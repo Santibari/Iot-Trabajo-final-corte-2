@@ -43,6 +43,34 @@ Cada vez que el servidor HTTP recibe una orden de movimiento, el ESP32 **publica
 
 Este mecanismo permite **monitorear remotamente** las acciones del carro desde cualquier cliente MQTT suscrito al mismo tópico.
 
+## Retardo exponencial con jitter
+
+Cuando un dispositivo intenta reconectarse (por ejemplo al broker MQTT o a una red WiFi) y falla, no conviene reconectarse inmediatamente muchas veces seguidas, porque eso puede saturar la red o el servidor.
+
+Por eso se usa el retardo exponencial con jitter, que:
+
+- Duplica el tiempo de espera entre intentos fallidos (exponencial).
+
+- Añade una pequeña cantidad aleatoria (jitter) para evitar que varios dispositivos fallen y se reconecten todos al mismo tiempo.
+
+La simulación de respuesta fue implementada dentro del bloque handleControl() del servidor HTTP, justo después de interpretar los comandos de dirección y velocidad. En esta sección, además de mostrar los mensajes en el monitor serial, se añadió la estructura JSON "response" que simula la salida esperada del servidor, indicando el estado del carro con los campos "direction" y "speed", permitiendo visualizar la confirmación del comando recibido como si se tratara de una interacción real con un servidor remoto.
+
+**Donde se uso:**
+```json
+void handleControl() {
+  String direction = server.arg("direction");
+  String speed = server.arg("speed");
+
+  Serial.println("Comando recibido:");
+  Serial.println("Dirección: " + direction);
+  Serial.println("Velocidad: " + speed);
+
+  // Simulación de respuesta JSON
+  String response = "{ \"response\": { \"direction\": \"" + direction + "\", \"speed\": \"" + speed + "\" } }";
+  server.send(200, "application/json", response);
+}
+```
+
 ---
 
 ### Simulación del Carro
@@ -50,7 +78,8 @@ El sistema no controla motores ni componentes físicos.
 Los movimientos se simulan mediante **mensajes impresos en el monitor serial**, por ejemplo:
 
 ### Diagrama De secuencias
-![Diagrama de Secuencias](/img/Img5.png)
+
+![Diagrama de Secuencias](/img/IOT.jpg)
 
 ---
 

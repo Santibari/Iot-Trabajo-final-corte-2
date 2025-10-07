@@ -5,19 +5,16 @@
 // ==========================
 // CONFIGURACIÓN DE RED Wi-Fi
 // ==========================
-// Por temas de seguridad dejamos estos campos vacios
-const char* ssid = ""; // Aqui se pone tu red a usar
-const char* password = ""; // Aqui pones tu contraseña
+// Por seguridad no incluyo mis credenciales aquí
+const char* ssid = "";      // Aquí tu red WiFi
+const char* password = "";  // Aquí tu contraseña
 
 // ==========================
 // CONFIGURACIÓN MQTT (Mosquitto)
 // ==========================
-// Servidor MQTT (Mosquitto público)
-// Estos Tambien los dejamos vacios por la misma situacion
-const char* mqtt_server = "";
-const int mqtt_port = ;
-const char* mqtt_topic = "";
-
+const char* mqtt_server = "";   // Dirección del broker MQTT
+const int mqtt_port = ;         // Puerto del broker
+const char* mqtt_topic = "";    // Tópico a publicar
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -96,7 +93,6 @@ void handleMove() {
   String direccion = server.arg("direccion");
   int velocidad = server.arg("velocidad").toInt();
   int duracion = server.arg("duracion").toInt();
-
   if (duracion > 5) duracion = 5; // límite de seguridad
 
   String ipCliente = server.client().remoteIP().toString();
@@ -119,7 +115,7 @@ void handleMove() {
   // Respuesta HTTP
   server.send(200, "application/json", "{\"status\":\"Movimiento ejecutado\"}");
 
-  // Detener el carro después del tiempo
+  // Detener el carro después del tiempo indicado
   delay(duracion * 1000);
   stopCar();
 }
@@ -129,16 +125,66 @@ void handleStatus() {
 }
 
 // ==========================
-// CONEXIÓN Wi-Fi Y MQTT
+// FUNCIÓN DE CONEXIÓN WiFi CON RETARDO EXPONENCIAL + JITTER
+// ==========================
+void connectWiFi() {
+  int retry = 0;
+  int maxRetries = 6;
+
+  WiFi.begin(ssid, password);
+  Serial.print("Conectando a WiFi");
+
+  while (WiFi.status() != WL_CONNECTED && retry < maxRetries) {
+    long baseDelay = pow(2, retry) * 500; // 0.5s, 1s, 2s, 4s, etc.
+    long jitter = random(-200, 200);      // +/- 0.2s
+    long totalDelay = baseDelay + jitter;
+
+    if (totalDelay < 0) totalDelay = 0;
+
+    delay(totalDelay);
+    Serial.print(".");
+
+    retry++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n✅ Conectado a WiFi");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("\n❌ Error al conectar a WiFi después de varios intentos");
+  }
+}
+
+// ==========================
+// RECONEXIÓN MQTT CON RETARDO EXPONENCIAL + JITTER
 // ==========================
 void reconnectMQTT() {
-  while (!client.connected()) {
+  int retry = 0;
+  int maxRetries = 6;  // evitar bucles infinitos
+
+  while (!client.connected() && retry < maxRetries) {
+    Serial.print("Intentando conectar al broker MQTT... ");
+
     if (client.connect("ESP32Carro")) {
-      Serial.println("Conectado a servidor MQTT");
+      Serial.println("Conectado a servidor MQTT ✅");
+      return;
     } else {
-      Serial.print(".");
-      delay(1000);
+      retry++;
+      long baseDelay = pow(2, retry) * 1000; // 1s, 2s, 4s, etc.
+      long jitter = random(-500, 500);       // +/- 0.5s
+      long totalDelay = baseDelay + jitter;
+
+      if (totalDelay < 0) totalDelay = 0;
+
+      Serial.print("Fallo MQTT. Reintentando en ");
+      Serial.print(totalDelay / 1000.0);
+      Serial.println(" segundos...");
+      delay(totalDelay);
     }
+  }
+
+  if (!client.connected()) {
+    Serial.println("❌ No se pudo conectar al broker MQTT tras varios intentos.");
   }
 }
 
@@ -147,6 +193,7 @@ void reconnectMQTT() {
 // ==========================
 void setup() {
   Serial.begin(115200);
+  randomSeed(analogRead(0)); // inicializar aleatoriedad
 
   // Configurar pines
   pinMode(ledFrontLeft, OUTPUT);
@@ -160,32 +207,31 @@ void setup() {
   ledcAttach(IN4, 1000, 8);
   stopCar();
 
-  // Conectar a Wi-Fi
-  WiFi.begin(ssid, password);
-  Serial.print("Conectando a WiFi...");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\nConectado a WiFi");
-  Serial.println(WiFi.localIP());
+  // Conectar WiFi con retardo exponencial + jitter
+  connectWiFi();
 
-  // MQTT
+  // Configurar MQTT
   client.setServer(mqtt_server, mqtt_port);
 
-  // Endpoints
+  // Configurar endpoints HTTP
   server.on("/move", handleMove);
   server.on("/status", handleStatus);
-
   server.begin();
-  Serial.println("Servidor HTTP iniciado");
+  Serial.println("Servidor HTTP iniciado ✅");
 }
 
 // ==========================
-// LOOP
+// LOOP PRINCIPAL
 // ==========================
 void loop() {
-  if (!client.connected()) reconnectMQTT();
+  if (WiFi.status() != WL_CONNECTED) {
+    connectWiFi();
+  }
+
+  if (!client.connected()) {
+    reconnectMQTT();
+  }
+
   client.loop();
   server.handleClient();
 }
