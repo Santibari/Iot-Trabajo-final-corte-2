@@ -50,7 +50,7 @@ El sistema no controla motores ni componentes físicos.
 Los movimientos se simulan mediante **mensajes impresos en el monitor serial**, por ejemplo:
 
 ### Diagrama De secuencias
-
+![Diagrama de Secuencias](/img/Img5.png)
 ---
 
 ## Resultados Optenidos y pruebas hechas:
@@ -83,4 +83,4 @@ Usamos una maquina para correr Mosquitto
 ![Prueba1](/img/prueba2.png)
 
 **Prueba MQTT con Postman:**
-![Prueba MQTT Postman](docs/prueba_mqtt_postman.png)
+![Prueba MQTT Postman](docs/Img5.png)
