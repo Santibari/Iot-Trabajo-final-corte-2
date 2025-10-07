@@ -5,8 +5,9 @@
 // ==========================
 // CONFIGURACIÓN DE RED Wi-Fi
 // ==========================
-const char* ssid = "BAZZANIR";
-const char* password = "00979625824";
+// Por temas de seguridad dejamos estos campos vacios
+const char* ssid = ""; // Aqui se pone tu red a usar
+const char* password = ""; // Aqui pones tu contraseña
 
 // ==========================
 // CONFIGURACIÓN MQTT (Mosquitto)
